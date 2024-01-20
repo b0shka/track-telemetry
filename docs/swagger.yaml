@@ -1,0 +1,65 @@
+basePath: /api/v1/
+definitions:
+  http.response:
+    properties:
+      message:
+        type: string
+    type: object
+  http.telemetryRequest:
+    properties:
+      action:
+        type: string
+      screen_id:
+        type: integer
+      timestamp:
+        type: string
+      user_id:
+        type: string
+    required:
+    - action
+    - screen_id
+    - timestamp
+    - user_id
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: REST API for Track App
+  title: Track API
+  version: "1.0"
+paths:
+  /track:
+    post:
+      consumes:
+      - application/json
+      description: track telemetry
+      parameters:
+      - description: track info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/http.telemetryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/http.response'
+      summary: Track telemetry
+      tags:
+      - Telemetry
+swagger: "2.0"

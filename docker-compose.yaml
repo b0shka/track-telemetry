@@ -1,0 +1,12 @@
+version: '3.9'
+
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:22.2
+    container_name: clickhouse
+    environment:
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_PASSWORD: qwerty
+    ports:
+      - "18123:8123"
+      - "19000:9000"

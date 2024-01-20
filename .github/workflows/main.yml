@@ -1,0 +1,70 @@
+name: Main
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  TEST_CLICKHOUSE_HOST: "127.0.0.1"
+  TEST_CLICKHOUSE_PORT: "19000"
+  TEST_CLICKHOUSE_DATABASE: "telemetry"
+  TEST_CLICKHOUSE_USERNAME: "default"
+  TEST_CLICKHOUSE_PASSWORD: "qwerty"
+
+jobs:
+  linter:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v4
+        with:
+          go-version: 1.21
+          cache: false
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: v1.54
+          args: --timeout=3m --issues-exit-code=0 ./...
+
+  tests:
+    runs-on: ubuntu-latest
+
+    services:
+      clickhouse:
+        image: clickhouse/clickhouse-server:22.2
+        env:
+          CLICKHOUSE_USER: ${{ env.TEST_CLICKHOUSE_USERNAME }}
+          CLICKHOUSE_PASSWORD: ${{ env.TEST_CLICKHOUSE_PASSWORD }}
+        ports:
+          - "18123:8123"
+          - "19000:9000"
+
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v4.1.0
+        with:
+          go-version: 1.21
+          cache: false
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install golang-migrate
+        run: |
+          go install -tags 'clickhouse' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+          which migrate
+
+      - name: Run migrations
+        run: make migrateup
+
+      - name: Unit tests
+        run: |
+          export TEST_CLICKHOUSE_HOST="${{ env.TEST_CLICKHOUSE_HOST }}"
+          export TEST_CLICKHOUSE_PORT="${{ env.TEST_CLICKHOUSE_PORT }}"
+          export TEST_CLICKHOUSE_DATABASE="${{ env.TEST_CLICKHOUSE_DATABASE }}"
+          export TEST_CLICKHOUSE_USERNAME="${{ env.TEST_CLICKHOUSE_USERNAME }}"
+          export TEST_CLICKHOUSE_PASSWORD="${{ env.TEST_CLICKHOUSE_PASSWORD }}"
+          wget https://github.com/maxmind/MaxMind-DB/blob/main/test-data/GeoLite2-Country-Test.mmdb
+          GIN_MODE=release go test --short -v ./...

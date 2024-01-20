@@ -1,0 +1,11 @@
+http:
+  port: 8080
+  maxHeaderBytes: 1
+  readTimeout: 10s
+  writeTimeout: 10s
+
+clickhouse:
+  dial_timeout: 1s
+  max_open_conns: 5
+  max_idle_conns: 5
+  conn_max_lifetime: 1h
