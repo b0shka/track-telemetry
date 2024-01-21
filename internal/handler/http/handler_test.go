@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/oschwald/geoip2-golang"
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 	"github.com/vanya/backend/internal/config"
 	handler "github.com/vanya/backend/internal/handler/http"
@@ -13,13 +14,21 @@ import (
 )
 
 func TestNewHandler(t *testing.T) {
-	h := handler.NewHandler(&service.Services{}, &geoip2.Reader{})
+	h := handler.NewHandler(
+		&service.Services{},
+		&geoip2.Reader{},
+		&logrus.Logger{},
+	)
 
 	require.IsType(t, &handler.Handler{}, h)
 }
 
 func TestNewHandler_InitRoutes(t *testing.T) {
-	h := handler.NewHandler(&service.Services{}, &geoip2.Reader{})
+	h := handler.NewHandler(
+		&service.Services{},
+		&geoip2.Reader{},
+		&logrus.Logger{},
+	)
 	router := h.InitRoutes(&config.Config{})
 
 	ts := httptest.NewServer(router)

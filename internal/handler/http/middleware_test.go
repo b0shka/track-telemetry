@@ -8,9 +8,11 @@ import (
 	"github.com/corpix/uarand"
 	"github.com/gin-gonic/gin"
 	"github.com/oschwald/geoip2-golang"
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/vanya/backend/internal/domain/telemetry"
+	"github.com/vanya/backend/internal/service"
 	"github.com/vanya/backend/pkg/utils"
 )
 
@@ -40,10 +42,16 @@ func TestHandler_ipIdentity(t *testing.T) {
 			reader, err := geoip2.Open("../../../GeoLite2-Country-Test.mmdb")
 			require.NoError(t, err)
 
+			handler := Handler{
+				Services: &service.Services{},
+				Geoip:    reader,
+				Logger:   &logrus.Logger{},
+			}
+
 			router := gin.Default()
 			router.GET(
 				"/identity",
-				ipIdentity(reader),
+				handler.ipIdentity(reader),
 				func(c *gin.Context) {
 					c.Status(http.StatusOK)
 				},

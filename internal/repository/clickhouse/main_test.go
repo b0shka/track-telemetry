@@ -7,12 +7,14 @@ import (
 
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/vanya/backend/internal/config"
-	"github.com/vanya/backend/pkg/logger"
+	"github.com/vanya/backend/pkg/logging"
 )
 
 var testRepos *Repositories
 
 func TestMain(m *testing.M) {
+	logger := logging.NewLogger(config.EnvTest)
+
 	cfg, err := config.InitTestConfig("../../../.env.test")
 	if err != nil {
 		logger.Error(err)

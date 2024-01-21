@@ -1,6 +1,7 @@
 package config
 
 import (
+	"log"
 	"os"
 	"time"
 
@@ -12,7 +13,7 @@ import (
 const (
 	EnvLocal = "local"
 	EnvTest  = "test"
-	EnvProd  = "production"
+	EnvProd  = "prod"
 )
 
 type (
@@ -20,6 +21,7 @@ type (
 		Environment string           `env:"ENV"`
 		ClickHouse  ClickHouseConfig `mapstructure:"clickhouse"`
 		HTTP        HTTPConfig       `mapstructure:"http"`
+		Geoip2File  string           `mapstructure:"geoip2_file"`
 	}
 
 	ClickHouseTest struct {
@@ -52,28 +54,31 @@ type (
 	}
 )
 
-func InitConfig(configPath string) (*Config, error) {
-	if err := parseConfigFile(configPath); err != nil {
-		return nil, err
+func InitConfig(configPath string) *Config {
+	viper.AddConfigPath(configPath)
+	viper.SetConfigName("main")
+
+	if err := viper.ReadInConfig(); err != nil {
+		log.Fatal(err)
 	}
 
 	var cfg Config
 
 	if err := viper.Unmarshal(&cfg); err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
 
 	if os.Getenv("APP_ENV") == EnvLocal {
 		if err := godotenv.Load(); err != nil {
-			return nil, err
+			log.Fatal(err)
 		}
 	}
 
 	if err := env.Parse(&cfg); err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
 
-	return &cfg, nil
+	return &cfg
 }
 
 func InitTestConfig(envPath string) (*ClickHouseTest, error) {
@@ -90,11 +95,4 @@ func InitTestConfig(envPath string) (*ClickHouseTest, error) {
 	}
 
 	return &cfg, nil
-}
-
-func parseConfigFile(folder string) error {
-	viper.AddConfigPath(folder)
-	viper.SetConfigName("main")
-
-	return viper.ReadInConfig()
 }

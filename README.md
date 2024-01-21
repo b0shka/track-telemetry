@@ -4,21 +4,29 @@
 
 ---
 
-## Installation
+## Описание
 
-#### Prerequisites
+Сервис для сбора телеметрии с мобильного приложения. Пока что обрабатывает и хранит самую простую телеметрию, в дальнейшем ее можно без проблем расширить.
+
+Для хранения телеметрии используется **ClickHouse**, поскольку данная БД очень хорошо подходит именно для хранения метрик.
+
+---
+
+## Установка
+
+#### Необходимые компоненты
 
 - Go 1.21
 - Docker & Docker Compose
-- mockgen (used to start mock generation for unit tests)
-- golang-migrate (used to run migrations in the database)
-- golangci-lint (used to run code checks)
-- swag (used to re-generate swagger documentation)
+- mockgen (используется для запуска генерации mock для модульных тестов)
+- golang-migrate (используется для запуска миграций в базе данных)
+- golangci-lint (используется для выполнения проверок кода)
+- swag (используется для создания документации swagger)
 
-Create `.env` file in root directory and add following values:
+Создайте файл `.env` в корневом каталоге и добавьте следующие значения:
 
 ```
-ENV=local|production
+ENV=local|prod
 HTTP_HOST=localhost
 
 CLICKHOUSE_HOST=<host>
@@ -31,10 +39,6 @@ CLICKHOUSE_MIGRATION_URL=file://<path to folder with migrate files>
 
 ---
 
-## Build & Run
+## Сборка и запуск
 
-To start, run
-
-```
-make start
-```
+Используйте `make start` для сборки и запуска проекта, `make lint` для проверки кода с помощью linter.

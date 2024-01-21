@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/oschwald/geoip2-golang"
+	"github.com/sirupsen/logrus"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/vanya/backend/docs"
@@ -16,15 +17,18 @@ import (
 type Handler struct {
 	Services *service.Services
 	Geoip    *geoip2.Reader
+	Logger   *logrus.Logger
 }
 
 func NewHandler(
 	services *service.Services,
 	geoip *geoip2.Reader,
+	logger *logrus.Logger,
 ) *Handler {
 	return &Handler{
 		Services: services,
 		Geoip:    geoip,
+		Logger:   logger,
 	}
 }
 

@@ -16,13 +16,14 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/labstack/gommon/log"
 	"github.com/oschwald/geoip2-golang"
+	"github.com/sirupsen/logrus"
 	"github.com/vanya/backend/internal/config"
 	handler "github.com/vanya/backend/internal/handler/http"
 	repository "github.com/vanya/backend/internal/repository/clickhouse"
 	"github.com/vanya/backend/internal/server"
 	"github.com/vanya/backend/internal/service"
 	"github.com/vanya/backend/pkg/database/clickhouse"
-	"github.com/vanya/backend/pkg/logger"
+	"github.com/vanya/backend/pkg/logging"
 )
 
 //	@title			Track API
@@ -33,14 +34,10 @@ import (
 //	@BasePath	/api/v1/
 
 func Run(configPath string) {
-	cfg, err := config.InitConfig(configPath)
-	if err != nil {
-		logger.Error(err)
+	cfg := config.InitConfig(configPath)
+	logger := logging.NewLogger(cfg.Environment)
 
-		return
-	}
-
-	reader, err := geoip2.Open("GeoLite2-Country.mmdb")
+	reader, err := geoip2.Open(cfg.Geoip2File)
 	if err != nil {
 		logger.Error(err)
 
@@ -56,7 +53,7 @@ func Run(configPath string) {
 
 	logger.Info("ClickHouse migrated successfully")
 
-	clickhouseConn, err := clickhouse.Connect(cfg.ClickHouse)
+	clickhouseConn, err := clickhouse.Connect(cfg.ClickHouse, logger)
 	if err != nil {
 		logger.Errorf("Cannot connect to ClickHouse: %s", err)
 
@@ -69,7 +66,7 @@ func Run(configPath string) {
 	services := service.NewServices(service.Deps{
 		Repos: repos,
 	})
-	handlers := handler.NewHandler(services, reader)
+	handlers := handler.NewHandler(services, reader, logger)
 	routes := handlers.InitRoutes(cfg)
 	srv := server.NewServer(cfg, routes)
 
@@ -79,13 +76,14 @@ func Run(configPath string) {
 		}
 	}()
 
-	gracefulShutdown(srv, clickhouseConn, reader)
+	gracefulShutdown(srv, clickhouseConn, reader, logger)
 }
 
 func gracefulShutdown(
 	srv *server.Server,
 	clickHouse driver.Conn,
 	reader *geoip2.Reader,
+	logger *logrus.Logger,
 ) {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
@@ -103,7 +101,10 @@ func gracefulShutdown(
 	logger.Info("Server stopped")
 
 	clickHouse.Close()
+	logger.Info("Close ClickHouse connection")
+
 	reader.Close()
+	logger.Info("Close Geoip2 connection")
 }
 
 func runDBMigration(cfg config.ClickHouseConfig) error {

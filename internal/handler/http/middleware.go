@@ -28,15 +28,13 @@ func corsMiddleware(c *gin.Context) {
 	}
 }
 
-func ipIdentity(geoip *geoip2.Reader) gin.HandlerFunc {
+func (h *Handler) ipIdentity(geoip *geoip2.Reader) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ip := c.ClientIP()
 
 		country, err := geoip.Country(net.ParseIP(ip))
 		if err != nil {
-			newResponse(c, http.StatusInternalServerError, err.Error())
-
-			return
+			h.Logger.Errorf("Error parsing geoip: %s", err.Error())
 		}
 
 		ua := useragent.New(c.Request.Header.Get("User-Agent"))

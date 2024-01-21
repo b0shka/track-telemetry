@@ -7,11 +7,11 @@ import (
 
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
+	"github.com/sirupsen/logrus"
 	"github.com/vanya/backend/internal/config"
-	"github.com/vanya/backend/pkg/logger"
 )
 
-func Connect(cfg config.ClickHouseConfig) (driver.Conn, error) {
+func Connect(cfg config.ClickHouseConfig, logger *logrus.Logger) (driver.Conn, error) {
 	ctx := context.Background()
 	option := &clickhouse.Options{
 		Addr: []string{fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)},

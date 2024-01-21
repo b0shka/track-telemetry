@@ -9,7 +9,7 @@ import (
 )
 
 func (h *Handler) initTelemetryRoutes(api *gin.RouterGroup) {
-	api.Use(ipIdentity(h.Geoip))
+	api.Use(h.ipIdentity(h.Geoip))
 	api.POST("/track", h.track)
 }
 
@@ -35,28 +35,28 @@ type telemetryRequest struct {
 func (h *Handler) track(c *gin.Context) {
 	payload, err := getPayloadByContext(c)
 	if err != nil {
-		newResponse(c, http.StatusInternalServerError, err.Error())
+		h.newResponse(c, http.StatusInternalServerError, err.Error())
 
 		return
 	}
 
 	var req telemetryRequest
 	if err := c.BindJSON(&req); err != nil {
-		newResponse(c, http.StatusBadRequest, domain.ErrInvalidInput.Error())
+		h.newResponse(c, http.StatusBadRequest, domain.ErrInvalidInput.Error())
 
 		return
 	}
 
 	inp, err := NewTelemetryInput(req, payload)
 	if err != nil {
-		newResponse(c, http.StatusBadRequest, err.Error())
+		h.newResponse(c, http.StatusBadRequest, err.Error())
 
 		return
 	}
 
 	err = h.Services.Telemetry.Append(c, inp)
 	if err != nil {
-		newResponse(c, http.StatusInternalServerError, err.Error())
+		h.newResponse(c, http.StatusInternalServerError, err.Error())
 
 		return
 	}

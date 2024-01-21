@@ -86,12 +86,8 @@ func TestInitConfig(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			setEnv(testCase.args.env)
 
-			got, err := InitConfig(testCase.args.path)
-			if (err != nil) != testCase.wantErr {
-				t.Errorf("InitConfig() error = %v, wantErr %v", err, testCase.wantErr)
+			got := InitConfig(testCase.args.path)
 
-				return
-			}
 			if !reflect.DeepEqual(got, testCase.want) {
 				t.Errorf("InitConfig() got = %v, want = %v", got, testCase.want)
 			}
