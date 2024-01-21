@@ -24,14 +24,6 @@ type (
 		Geoip2File  string           `mapstructure:"geoip2_file"`
 	}
 
-	ClickHouseTest struct {
-		Host     string `env:"TEST_CLICKHOUSE_HOST"`
-		Port     uint16 `env:"TEST_CLICKHOUSE_PORT"`
-		Database string `env:"TEST_CLICKHOUSE_DATABASE"`
-		Username string `env:"TEST_CLICKHOUSE_USERNAME"`
-		Password string `env:"TEST_CLICKHOUSE_PASSWORD"`
-	}
-
 	ClickHouseConfig struct {
 		Host            string        `env:"CLICKHOUSE_HOST"`
 		Port            uint16        `env:"CLICKHOUSE_PORT"`
@@ -52,47 +44,66 @@ type (
 		ReadTimeout        time.Duration `mapstructure:"readTimeout"`
 		WriteTimeout       time.Duration `mapstructure:"writeTimeout"`
 	}
+
+	ClickHouseTest struct {
+		Host     string `env:"TEST_CLICKHOUSE_HOST"`
+		Port     uint16 `env:"TEST_CLICKHOUSE_PORT"`
+		Database string `env:"TEST_CLICKHOUSE_DATABASE"`
+		Username string `env:"TEST_CLICKHOUSE_USERNAME"`
+		Password string `env:"TEST_CLICKHOUSE_PASSWORD"`
+	}
+
+	HandlerTest struct {
+		Geoip2File string `mapstructure:"geoip2_file_test"`
+	}
 )
 
 func InitConfig(configPath string) *Config {
+	var cfg Config
+
+	parseFileConfig(configPath, "main", &cfg)
+	parseFileEnv(".env", EnvLocal, &cfg)
+
+	return &cfg
+}
+
+func InitTestConfig(configPath string) *HandlerTest {
+	var cfg HandlerTest
+
+	parseFileConfig(configPath, "test", &cfg)
+
+	return &cfg
+}
+
+func InitTestEnv(envPath string) *ClickHouseTest {
+	var cfg ClickHouseTest
+
+	parseFileEnv(envPath, EnvTest, &cfg)
+
+	return &cfg
+}
+
+func parseFileConfig[T Config | HandlerTest](configPath, nameFile string, cfg *T) {
 	viper.AddConfigPath(configPath)
-	viper.SetConfigName("main")
+	viper.SetConfigName(nameFile)
 
 	if err := viper.ReadInConfig(); err != nil {
 		log.Fatal(err)
 	}
 
-	var cfg Config
-
 	if err := viper.Unmarshal(&cfg); err != nil {
 		log.Fatal(err)
 	}
+}
 
-	if os.Getenv("APP_ENV") == EnvLocal {
-		if err := godotenv.Load(); err != nil {
+func parseFileEnv[T Config | ClickHouseTest](envPath, envMode string, cfg *T) {
+	if os.Getenv("APP_ENV") == envMode {
+		if err := godotenv.Load(envPath); err != nil {
 			log.Fatal(err)
 		}
 	}
 
-	if err := env.Parse(&cfg); err != nil {
+	if err := env.Parse(cfg); err != nil {
 		log.Fatal(err)
 	}
-
-	return &cfg
-}
-
-func InitTestConfig(envPath string) (*ClickHouseTest, error) {
-	var cfg ClickHouseTest
-
-	if os.Getenv("APP_ENV") == EnvTest {
-		if err := godotenv.Load(envPath); err != nil {
-			return nil, err
-		}
-	}
-
-	if err := env.Parse(&cfg); err != nil {
-		return nil, err
-	}
-
-	return &cfg, nil
 }

@@ -44,8 +44,7 @@ func Run(configPath string) {
 		return
 	}
 
-	err = runDBMigration(cfg.ClickHouse)
-	if err != nil {
+	if err = runDBMigration(cfg.ClickHouse); err != nil {
 		logger.Error(err)
 
 		return

@@ -15,12 +15,7 @@ var testRepos *Repositories
 func TestMain(m *testing.M) {
 	logger := logging.NewLogger(config.EnvTest)
 
-	cfg, err := config.InitTestConfig("../../../.env.test")
-	if err != nil {
-		logger.Error(err)
-
-		return
-	}
+	cfg := config.InitTestEnv("../../../.env.test")
 
 	option := &clickhouse.Options{
 		Addr: []string{

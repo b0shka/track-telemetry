@@ -78,6 +78,7 @@ func TestInitConfig(t *testing.T) {
 					ReadTimeout:        time.Second * 10,
 					WriteTimeout:       time.Second * 10,
 				},
+				Geoip2File: "GeoLite2-Country.mmdb",
 			},
 		},
 	}

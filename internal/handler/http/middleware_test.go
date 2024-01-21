@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -39,7 +40,9 @@ func TestHandler_ipIdentity(t *testing.T) {
 
 	for _, testCase := range testTable {
 		t.Run(testCase.name, func(t *testing.T) {
-			reader, err := geoip2.Open("../../../GeoLite2-Country-Test.mmdb")
+			reader, err := geoip2.Open(
+				fmt.Sprintf("../../../%s", cfg.Geoip2File),
+			)
 			require.NoError(t, err)
 
 			handler := Handler{

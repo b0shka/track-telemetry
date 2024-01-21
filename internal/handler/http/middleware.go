@@ -34,7 +34,7 @@ func (h *Handler) ipIdentity(geoip *geoip2.Reader) gin.HandlerFunc {
 
 		country, err := geoip.Country(net.ParseIP(ip))
 		if err != nil {
-			h.Logger.Errorf("Error parsing geoip: %s", err.Error())
+			h.Logger.Errorf("Error parsing ip %s with geoip: %s", ip, err.Error())
 		}
 
 		ua := useragent.New(c.Request.Header.Get("User-Agent"))

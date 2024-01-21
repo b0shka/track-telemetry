@@ -9,3 +9,6 @@ clickhouse:
   max_open_conns: 5
   max_idle_conns: 5
   conn_max_lifetime: 1h
+
+geoip2_file: "GeoLite2-Country.mmdb"
+geoip2_file_test: "GeoLite2-Country-Test.mmdb"
