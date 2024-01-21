@@ -11,10 +11,13 @@ import (
 
 func TestTelemetryRepository_Append(t *testing.T) {
 	arg := AppendTelemetryParams{
-		UserID:    uuid.New(),
-		ScreenID:  1,
-		Action:    "click",
-		Timestamp: time.Now().UTC(),
+		UserID:     uuid.New(),
+		Screen:     "home",
+		Action:     "click button 'Profile'",
+		Timestamp:  time.Now().UTC(),
+		AppVersion: "v1.1.18",
+		Country:    "RU",
+		OS:         "Android 11",
 	}
 
 	err := testRepos.Telemetry.Append(context.Background(), arg)

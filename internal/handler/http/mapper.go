@@ -16,9 +16,10 @@ func NewTelemetryInput(
 
 	return telemetry.NewTelemetryInput(
 		userID,
-		req.ScreenID,
+		req.Screen,
 		req.Action,
 		req.Timestamp,
+		req.AppVersion,
 		payload.Country,
 		payload.OS,
 	), nil

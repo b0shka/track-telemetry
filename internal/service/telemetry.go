@@ -18,11 +18,12 @@ func NewTelemetryService(repo repository.Telemetry) *TelemetryService {
 
 func (s *TelemetryService) Append(ctx *gin.Context, inp telemetry.Input) error {
 	return s.repo.Append(ctx, repository.AppendTelemetryParams{
-		UserID:    inp.UserID,
-		ScreenID:  inp.ScreenID,
-		Action:    inp.Action,
-		Timestamp: inp.Timestamp,
-		Country:   inp.Country,
-		OS:        inp.OS,
+		UserID:     inp.UserID,
+		Screen:     inp.Screen,
+		Action:     inp.Action,
+		Timestamp:  inp.Timestamp,
+		AppVersion: inp.AppVersion,
+		Country:    inp.Country,
+		OS:         inp.OS,
 	})
 }

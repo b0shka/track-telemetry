@@ -45,16 +45,16 @@ type (
 		WriteTimeout       time.Duration `mapstructure:"writeTimeout"`
 	}
 
-	ClickHouseTest struct {
+	HandlerTest struct {
+		Geoip2File string `mapstructure:"geoip2_file_test"`
+	}
+
+	RepositoryTest struct {
 		Host     string `env:"TEST_CLICKHOUSE_HOST"`
 		Port     uint16 `env:"TEST_CLICKHOUSE_PORT"`
 		Database string `env:"TEST_CLICKHOUSE_DATABASE"`
 		Username string `env:"TEST_CLICKHOUSE_USERNAME"`
 		Password string `env:"TEST_CLICKHOUSE_PASSWORD"`
-	}
-
-	HandlerTest struct {
-		Geoip2File string `mapstructure:"geoip2_file_test"`
 	}
 )
 
@@ -75,8 +75,8 @@ func InitTestConfig(configPath string) *HandlerTest {
 	return &cfg
 }
 
-func InitTestEnv(envPath string) *ClickHouseTest {
-	var cfg ClickHouseTest
+func InitTestEnv(envPath string) *RepositoryTest {
+	var cfg RepositoryTest
 
 	parseFileEnv(envPath, EnvTest, &cfg)
 
@@ -96,7 +96,7 @@ func parseFileConfig[T Config | HandlerTest](configPath, nameFile string, cfg *T
 	}
 }
 
-func parseFileEnv[T Config | ClickHouseTest](envPath, envMode string, cfg *T) {
+func parseFileEnv[T Config | RepositoryTest](envPath, envMode string, cfg *T) {
 	if os.Getenv("APP_ENV") == envMode {
 		if err := godotenv.Load(envPath); err != nil {
 			log.Fatal(err)

@@ -30,7 +30,7 @@ const docTemplate = `{
                 "summary": "Track telemetry",
                 "parameters": [
                     {
-                        "description": "track info",
+                        "description": "track telemetry info",
                         "name": "input",
                         "in": "body",
                         "required": true,
@@ -81,7 +81,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "action",
-                "screen_id",
+                "screen",
                 "timestamp",
                 "user_id"
             ],
@@ -89,8 +89,11 @@ const docTemplate = `{
                 "action": {
                     "type": "string"
                 },
-                "screen_id": {
-                    "type": "integer"
+                "app_version": {
+                    "type": "string"
+                },
+                "screen": {
+                    "type": "string"
                 },
                 "timestamp": {
                     "type": "string"

@@ -15,10 +15,6 @@ func NewLogger(env string) *logrus.Logger {
 		log.SetFormatter(&logrus.TextFormatter{})
 		log.SetLevel(logrus.DebugLevel)
 		log.SetOutput(os.Stdout)
-	case config.EnvTest:
-		log.SetFormatter(&logrus.JSONFormatter{})
-		log.SetLevel(logrus.DebugLevel)
-		log.SetOutput(os.Stdout)
 	case config.EnvProd:
 		log.SetFormatter(&logrus.JSONFormatter{})
 		log.SetLevel(logrus.InfoLevel)

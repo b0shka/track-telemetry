@@ -40,16 +40,18 @@ func TestHandler_track(t *testing.T) {
 		{
 			name: "ok",
 			body: gin.H{
-				"user_id":   userID,
-				"screen_id": 1,
-				"action":    "click",
-				"timestamp": timestamp,
+				"user_id":     userID,
+				"screen":      "home",
+				"action":      "click button 'Profile'",
+				"timestamp":   timestamp,
+				"app_version": "v1.1.18",
 			},
 			userInput: telemetry.Input{
-				UserID:    userID,
-				ScreenID:  1,
-				Action:    "click",
-				Timestamp: timestamp,
+				UserID:     userID,
+				Screen:     "home",
+				Action:     "click button 'Profile'",
+				Timestamp:  timestamp,
+				AppVersion: "v1.1.18",
 			},
 			mockBehavior: func(s *mock_service.MockTelemetry, input telemetry.Input) {
 				s.EXPECT().Append(gomock.Any(), input).Return(nil)
@@ -60,10 +62,11 @@ func TestHandler_track(t *testing.T) {
 		{
 			name: "error telemetry append",
 			body: gin.H{
-				"user_id":   userID,
-				"screen_id": 1,
-				"action":    "click",
-				"timestamp": timestamp,
+				"user_id":     userID,
+				"screen":      "home",
+				"action":      "click button 'Profile'",
+				"timestamp":   timestamp,
+				"app_version": "v1.1.18",
 			},
 			mockBehavior: func(s *mock_service.MockTelemetry, input telemetry.Input) {
 				s.EXPECT().Append(gomock.Any(), gomock.Any()).
@@ -82,10 +85,11 @@ func TestHandler_track(t *testing.T) {
 		{
 			name: "invalid uuid",
 			body: gin.H{
-				"user_id":   "944c1052-a14b-47e7-9efa-31b7900bda3",
-				"screen_id": 1,
-				"action":    "click",
-				"timestamp": timestamp,
+				"user_id":     "944c1052-a14b-47e7-9efa-31b7900bda3",
+				"screen":      "home",
+				"action":      "click button 'Profile'",
+				"timestamp":   timestamp,
+				"app_version": "v1.1.18",
 			},
 			mockBehavior: func(s *mock_service.MockTelemetry, input telemetry.Input) {},
 			statusCode:   400,
@@ -108,7 +112,9 @@ func TestHandler_track(t *testing.T) {
 				Logger:   &logrus.Logger{},
 			}
 
-			reader, err := geoip2.Open("../../../GeoLite2-Country-Test.mmdb")
+			reader, err := geoip2.Open(
+				fmt.Sprintf("../../../%s", cfg.Geoip2File),
+			)
 			require.NoError(t, err)
 
 			router := gin.Default()

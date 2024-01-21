@@ -9,15 +9,17 @@ definitions:
     properties:
       action:
         type: string
-      screen_id:
-        type: integer
+      app_version:
+        type: string
+      screen:
+        type: string
       timestamp:
         type: string
       user_id:
         type: string
     required:
     - action
-    - screen_id
+    - screen
     - timestamp
     - user_id
     type: object
@@ -34,7 +36,7 @@ paths:
       - application/json
       description: track telemetry
       parameters:
-      - description: track info
+      - description: track telemetry info
         in: body
         name: input
         required: true

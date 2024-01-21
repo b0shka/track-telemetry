@@ -14,10 +14,11 @@ func (h *Handler) initTelemetryRoutes(api *gin.RouterGroup) {
 }
 
 type telemetryRequest struct {
-	UserID    string    `json:"user_id" binding:"required"`
-	ScreenID  uint32    `json:"screen_id" binding:"required"`
-	Action    string    `json:"action" binding:"required"`
-	Timestamp time.Time `json:"timestamp" binding:"required"`
+	UserID     string    `json:"user_id" binding:"required"`
+	Screen     string    `json:"screen" binding:"required"`
+	Action     string    `json:"action" binding:"required"`
+	Timestamp  time.Time `json:"timestamp" binding:"required"`
+	AppVersion string    `json:"app_version"`
 }
 
 // @Summary		Track telemetry
@@ -26,7 +27,7 @@ type telemetryRequest struct {
 // @ModuleID	track
 // @Accept		json
 // @Produce		json
-// @Param		input	body		telemetryRequest	true	"track info"
+// @Param		input	body		telemetryRequest	true	"track telemetry info"
 // @Success		200		{string}	string				"ok"
 // @Failure		400		{object}	response
 // @Failure		500		{object}	response
