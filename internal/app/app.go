@@ -14,7 +14,6 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/clickhouse" // for connect to clickhouse
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"github.com/labstack/gommon/log"
 	"github.com/oschwald/geoip2-golang"
 	"github.com/sirupsen/logrus"
 	"github.com/vanya/backend/internal/config"
@@ -71,7 +70,7 @@ func Run(configPath string) {
 
 	go func() {
 		if err := srv.Run(); !errors.Is(err, http.ErrServerClosed) {
-			log.Errorf("error occurred while running http server: %s\n", err.Error())
+			logger.Errorf("error occurred while running http server: %s\n", err.Error())
 		}
 	}()
 
@@ -94,7 +93,7 @@ func gracefulShutdown(
 	defer shutdown()
 
 	if err := srv.Stop(ctx); err != nil {
-		log.Errorf("Failed to stop server: %v", err)
+		logger.Errorf("Failed to stop server: %v", err)
 	}
 
 	logger.Info("Server stopped")

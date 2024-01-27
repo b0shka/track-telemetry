@@ -41,7 +41,7 @@ func TestHandler_ipIdentity(t *testing.T) {
 	for _, testCase := range testTable {
 		t.Run(testCase.name, func(t *testing.T) {
 			reader, err := geoip2.Open(
-				fmt.Sprintf("../../../%s", cfg.Geoip2File),
+				fmt.Sprintf("testdata/%s", cfg.Geoip2File),
 			)
 			require.NoError(t, err)
 
